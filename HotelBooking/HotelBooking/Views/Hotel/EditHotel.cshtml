@@ -1,0 +1,259 @@
+﻿
+@{
+    ViewBag.Title = "EditHotel";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Edit Hotel Form</h3>
+        </div>
+        <div class="panel-body">
+            <input type="hidden" id="txtHotelId" value="@ViewBag.ID" disabled="disabled" />
+
+            <form id="EditHotelForm" class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="hotelname">Hotel Name</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="hotelname" name="hotelname" placeholder="Hotel name" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="phoneNumber">PhoneNumber</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="PhoneNumber" maxlength="10" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="cancalationPolicy">Cancalation Policy</label>
+                    <div class="col-sm-5">
+                        <textarea class="form-control" id="cancalationPolicy" name="cancalationPolicy" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="description">Description</label>
+                    <div class="col-sm-5">
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="currency">Currency</label>
+                    <div class="col-sm-5">
+                        <select id="ddlCurrency" class="form-control" name="currency">
+                            <option value=""> select currency</option>
+                            <option value="INR"> INR - India</option>
+                            <option value="AED"> AED - U.A.E. Dirham</option>
+                            <option value="SAR"> INR - Saudi Arabian Riyal</option>
+                            <option value="USD"> USD - U. S. Dollar</option>
+                            <option value="EUR"> EUR -  Euro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="pricePerNight">Price per night</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="pricePerNight" name="pricePerNight" placeholder="Price Per Night" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="address">Address</label>
+                    <div class="col-sm-5">
+                        <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="ddlCountry">Country</label>
+                    <div class="col-sm-5">
+                        <select id="ddlCountry" name="ddlCountry" class="form-control">
+                            <option value=""> Select Country</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="ddlCity">City</label>
+                    <div class="col-sm-5">
+                        <select id="ddlCity" name="ddlCity" class="form-control">
+                            <option value=""> Select City</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="hotelImage">Hotel Image</label>
+                    <div class="col-sm-5">
+                        <input type="file" class="form-control-file" id="hotelImage" name="hotelImage">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-9 col-sm-offset-4">
+                        <button type="submit" class="btn btn-primary" name="addhotel" value="Add hotel">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div>
+            @Html.ActionLink("Back To List", "HotelList", "Hotel", new { area = "" }, new { @class = "btn" })
+        </div>
+    </div>
+
+<script type="text/javascript">
+
+    function GetAllCountry() {
+        $.ajax({
+            type: "GET",
+            url: "/Hotel/GetCountry",
+            datatype: "Json",
+            success: function (data) {
+
+                $.each(data, function (index, value) {
+                    $('#ddlCountry').append('<option value="' + value.Id + '">' + value.CountryName + '</option>');
+                });
+            }
+        });
+    }
+    function GetAllCity() {
+        $.ajax({
+            type: "GET",
+            url: "/Hotel/GetCity",
+            datatype: "Json",
+            success: function (data) {
+                $.each(data, function (index, value) {
+                    $('#ddlCity').append('<option value="' + value.Id + '">' + value.CityName + '</option>');
+                });
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+        var hotelId = $("#txtHotelId").val();// takes viewbag Id value//
+
+        GetAllCountry();
+        GetAllCity();
+
+         $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            url: "/Hotel/GethotelById",
+            data: { hotelId: hotelId },
+            datatype: "Json",
+             success: function (data) {
+                $("#hotelname").val(data.HotelName);//model to textbox
+                $("#phoneNumber").val(data.PhoneNumber);
+                $("#pricePerNight").val(data.PricePerNight);
+                $("#cancalationPolicy").val(data.CancellationPolicy);
+                $("#description").val(data.Description);
+                $("#address").val(data.Address);
+                $("#ddlCurrency").val(data.DefaultCurrency);
+                $("#ddlCountry").val(data.CountryId);
+                $("#ddlCity").val(data.CityId);
+            }
+        })
+
+
+        $("#ddlCountry").change(function () {
+            $("#ddlCity").empty();
+            $.ajax({
+                type: "GET",
+                url: "/Hotel/GetCityByCountryId",
+                data: { countryId: $("#ddlCountry").val() },
+                datatype: "Json",
+                success: function (data) {
+                    $('#ddlCity').append('<option value="">please  Select City</option>');
+                    $.each(data, function (index, value) {
+                        $('#ddlCity').append('<option value="' + value.Id + '">' + value.CityName + '</option>');
+                    });
+                }
+            });
+        });
+
+        $("#EditHotelForm").validate({
+            rules: {
+                hotelname: "required",
+                phoneNumber: {
+                    required: true,
+                    minlength: 10,
+                    maxlength: 10
+                },
+                pricePerNight: {
+                    required: true,
+                    number: true
+                },
+                ddlCurrency: "required",
+                ddlCountry: "required",
+                ddlCity: "required"
+            },
+            messages: {
+                hotelname: "Please enter your firstname",
+                phoneNumber: {
+                    required: "Please enter a phoneNumber",
+                    minlength: "Your phoneNumber should be 10 characters",
+                    maxlength: "Your phoneNumber should be 10 characters"
+                },
+                pricePerNight: {
+                    required: "Please enter a pricePerNight",
+                    number: "Accept only decimal",
+                },
+                ddlCurrency: "Please select a currency",
+                ddlCountry: "Please select a country",
+                ddlCity: "Please select a City"
+            },
+            errorElement: "em",
+            errorPlacement: function (error, element) {
+                // Add the `help-block` class to the error element
+                error.addClass("help-block");
+
+                // Add `has-feedback` class to the parent div.form-group
+                // in order to add icons to inputs
+                element.parents(".col-sm-5").addClass("has-feedback");
+
+                if (element.prop("type") === "checkbox") {
+                    error.insertAfter(element.parent("label"));
+                } else {
+                    error.insertAfter(element);
+                }
+
+                // Add the span element, if doesn't exists, and apply the icon classes to it.
+                if (!element.next("span")[0]) {
+                    $("<span class='glyphicon glyphicon-remove form-control-feedback'></span>").insertAfter(element);
+                }
+            },
+            success: function (label, element) {
+                // Add the span element, if doesn't exists, and apply the icon classes to it.
+                if (!$(element).next("span")[0]) {
+                    $("<span class='glyphicon glyphicon-ok form-control-feedback'></span>").insertAfter($(element));
+                }
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).parents(".col-sm-5").addClass("has-error").removeClass("has-success");
+                $(element).next("span").addClass("glyphicon-remove").removeClass("glyphicon-ok");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).parents(".col-sm-5").addClass("has-success").removeClass("has-error");
+                $(element).next("span").addClass("glyphicon-ok").removeClass("glyphicon-remove");
+            },
+            submitHandler: function (form) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Hotel/EditHotel',
+                    data: {
+                        Id: $("#txtHotelId").val(),
+                        HotelName: $("#hotelname").val(),
+                        PhoneNumber: $("#phoneNumber").val(),
+                        PricePerNight: $("#pricePerNight").val(),
+                        CancellationPolicy: $('#cancalationPolicy').val(),
+                        Description: $('#description').val(),
+                        DefaultCurrency: $('#ddlCurrency').val(),
+                        Address: $('#address').val(),
+                        CountryId: $('#ddlCountry').val(),
+                        CityId: $('#ddlCity').val()
+                    },
+                    success: function (data) {
+                        alert(data);
+                         window.location.href = "/Hotel/HotelList";
+                    }
+                });
+                return false;
+            }
+        });
+    });
+</script>
