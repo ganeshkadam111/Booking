@@ -1,0 +1,170 @@
+﻿
+@{
+    ViewBag.Title = "HotelSearchBooking";
+    Layout = "~/Views/Shared/_SearchLayoutPage.cshtml";
+}
+
+<h2>Hotel Booking</h2>
+<style>
+    .card-horizontal {
+        display: flex;
+        flex: 1 1 auto;
+    }
+</style>
+<form class="form-horizontal" id="hotelSearchForm">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="field-icon-wrap">
+                <input type="text" class="form-control" id="hotelDestination" name="hotelDestination" placeholder="e.g. City and Country" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3 mb-lg-0 col-lg-3">
+            <label for="checkin_date" class="font-weight-bold text-black">From Date</label>
+            <div class="field-icon-wrap">
+                <div class='input-group date' id='FromDate'>
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3 mb-lg-0 col-lg-3">
+            <label for="checkout_date" class="font-weight-bold text-black">To Date</label>
+            <div class="field-icon-wrap">
+                <div class='input-group date' id='ToDate'>
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3 mb-md-0 col-lg-3">
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <label for="adults" class="font-weight-bold text-black">Adults</label>
+                    <div class="field-icon-wrap">
+                        <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                        <select name="" id="adults" class="form-control">
+                            <option value="">1</option>
+                            <option value="">2</option>
+                            <option value="">3</option>
+                            <option value="">4+</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <label for="children" class="font-weight-bold text-black">Children</label>
+                    <div class="field-icon-wrap">
+                        <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                        <select name="" id="children" class="form-control">
+                            <option value="">1</option>
+                            <option value="">2</option>
+                            <option value="">3</option>
+                            <option value="">4+</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 align-self-end">
+            <button id="checkAvailabilty" class="btn btn-primary btn-block text-white">Check Availabilty</button>
+        </div>
+    </div>
+</form>
+<input type="hidden" id="hiddenSearchValue" />
+<input type="hidden" id="calculatedNight" />
+<input type="hidden" id="hiddenStartDate" />
+<input type="hidden" id="hiddenEndDate" />
+
+<br />
+
+<label>search Result</label>
+    <div id="searchResult" class="container-fluid"></div>
+
+<script type="text/javascript">
+    function calculate() {
+        var d1 = $('#FromDate').datepicker('getDate');
+        var d2 = $('#ToDate').datepicker('getDate');
+        var oneDay = 24 * 60 * 60 * 1000;
+        var diff = 0;
+        if (d1 && d2) {
+
+            diff = Math.round(Math.abs((d2.getTime() - d1.getTime()) / (oneDay)));
+        }
+        $('#calculatedNight').val(diff);
+    }
+
+    $(document).ready(function () {
+        $('#FromDate').datepicker({
+            dateFormat: 'yy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+        });
+        $('#ToDate').datepicker({
+            dateFormat: 'yy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+        });
+        $('#FromDate').datepicker().bind("change", function () {
+            var minValue = $(this).val();
+            minValue = $.datepicker.parseDate("yy-mm-dd", minValue);
+            $('#ToDate').datepicker("option", "minDate", minValue);
+            calculate();
+        });
+        $('#ToDate').datepicker().bind("change", function () {
+            var maxValue = $(this).val();
+            maxValue = $.datepicker.parseDate("yy-mm-dd", maxValue);
+            $('#FromDate').datepicker("option", "maxDate", maxValue);
+            calculate();
+        });
+
+        $("#hotelDestination").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/HotelSearch/HotelSearchBookingList",
+                    type: "GET",
+                    dataType: "json",
+                    data: { keyword: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.CityName + "-" + item.CountryName, value: item.CityName, Id: item.CityId };
+                        }))
+                    }
+                })
+            },
+            select: function (event, ui) {
+                //fill selected customer details on form
+                $("#hiddenSearchValue").val(ui.item.value);
+            }
+        });
+
+        $("#checkAvailabilty").click(function () {
+            let searchTearm = $("#hiddenSearchValue").val();
+            $.ajax({
+                cache: false,
+                async: false,
+                type: "GET",
+                dataType: "json",
+                url: "/HotelSearch/HotelSearchBookingList",
+                data: { keyword: searchTearm },
+                success: function (data) {
+                    var card;
+                    $.each(data, function (i, v) {
+                        card +="<div class='row'><div class='col-12 mt-3'> <div class='card'>" +
+                            "<div class='card-horizontal'> <div class='img-square-wrapper'><img class='' src='http://via.placeholder.com/300x180' alt='Card image'></div>" +
+                            "<div class='card-body'><h4 class='card-title'>" + data.HotelName + "</h4><p class='card-text'>" + data.Description + "</p><p class='card-text'>" + data.DefaultCurrency + "</p><p class='card-text'>" + data.PricePerNight + " /pricePerNight</p></div><div>" +
+                            "<a href='javascript:void(0)' onclick='BookHotel(" + v.Id + ")' class='btn btn-primary'> Book Now</a></div></div></div></div></div>";
+                    });
+                    $("#searchResult").append(card);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('Failed to retrieve data.');
+                }
+            });
+        });
+    })
+</script>

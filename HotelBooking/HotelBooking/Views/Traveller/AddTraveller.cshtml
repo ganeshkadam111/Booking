@@ -1,0 +1,171 @@
+﻿
+@{
+    ViewBag.Title = "AddTraveller";
+    Layout = "~/Views/Shared/_SearchLayoutPage.cshtml";
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Add Traveller Form</h3>
+    </div>
+    <div class="panel-body">
+        <form id="AddTravellerForm" method="post" class="form-horizontal" action="">
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="FirstName">FirstName</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="FirstName" name="FirstName" placeholder="FirstName" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="MiddleName">MiddleName</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="MiddleName" name="MiddleName" placeholder="MiddleName" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="LastName">LastName</label>
+                <div class="col-sm-5">
+                    <textarea class="form-control" id="LastName" name="LastName" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="MobileNo">MobileNo</label>
+                <div class="col-sm-5">
+                    <textarea class="form-control" id="MobileNo" name="MobileNo" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="email">EmailId</label>
+                <div class="col-sm-5">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="EmailId" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="gender">Please select your gender</label>
+                <p>
+                    <label><input type="radio" name="gender" value="1">Male</label>
+                    <label><input type="radio" name="gender" value="2">Female</label>
+                </p>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="Address">Address</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="Address" name="Address">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="FirstName_2">FirstName_2</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="FirstName_2" name="FirstName_2" placeholder="FirstName_2" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="MiddleName_2">MiddleName_2</label>
+                <div class="col-sm-5">
+                    <textarea class="form-control" id="MiddleName_2" name="MiddleName_2" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="LastName_2">LastName_2</label>
+                <div class="col-sm-5">
+                    <textarea class="form-control" id="LastName_2" name="LastName_2" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-9 col-sm-offset-4">
+                    <button type="submit" class="btn btn-primary" name="addTraveller" value="Add traveller">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#AddTravellerForm").validate({
+            rules: {
+                FirstName: "required",
+                LastName: "required",
+                Address: "required",
+                FirstName_2: "required",
+                LastName_2: "required",
+                MobileNo: {
+                    required: true,
+                    minlength: 10,
+                    maxlength: 10
+                },
+                email: {
+                    required: true,
+                    email: true
+                },
+                messages: {
+                    FirstName: "Please enter your firstname",
+                    LastName: "Please enter your lastname",
+                    Address: "Please enter your address",
+                    FirstName_2: "Please enter your firstname_2",
+                    FirstName_2: "Please enter your lastname_2",
+                    MobileNo: {
+                        required: "Please enter a MobileNo",
+                        minlength: "Your MobileNo should be 10 characters",
+                        maxlength: "Your MobileNo should be 10 characters"
+                    },
+                    email: "Please enter a valid email address",
+                },
+                errorElement: "em",
+                errorPlacement: function (error, element) {
+                    // Add the `help-block` class to the error element
+                    error.addClass("help-block");
+
+                    // Add `has-feedback` class to the parent div.form-group
+                    // in order to add icons to inputs
+                    element.parents(".col-sm-5").addClass("has-feedback");
+
+                    // Add the span element, if doesn't exists, and apply the icon classes to it.
+                    if (!element.next("span")[0]) {
+                        $("<span class='glyphicon glyphicon-remove form-control-feedback'></span>").insertAfter(element);
+                    }
+                },
+                success: function (label, element) {
+                    // Add the span element, if doesn't exists, and apply the icon classes to it.
+                    if (!$(element).next("span")[0]) {
+                        $("<span class='glyphicon glyphicon-ok form-control-feedback'></span>").insertAfter($(element));
+                    }
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).parents(".col-sm-5").addClass("has-error").removeClass("has-success");
+                    $(element).next("span").addClass("glyphicon-remove").removeClass("glyphicon-ok");
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).parents(".col-sm-5").addClass("has-success").removeClass("has-error");
+                    $(element).next("span").addClass("glyphicon-ok").removeClass("glyphicon-remove");
+                },
+                submitHandler: function (form) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Traveller/AddTraveller',
+                        data: {
+                            FirstName: $("#FirstName").val(),
+                            MiddleName: $("#MiddleName").val(),
+                            LastName: $("#LastName").val(),
+                            MobileNo: $('#MobileNo').val(),
+                            EmailId: $('#email').val(),
+                            Address: $('#Address').val(),
+                            Gender: $("input[name='gender']:checked").val(),
+                            FirstName_2: $('#FirstName_2').val(),
+                            MiddleName_2: $('#MiddleName_2').val(),
+                            LastName_2: $('#LastName_2').val()
+                        },
+                        success: function (data) {
+                            window.location.href = "/Payment/AddPayment";
+                        }
+                    });
+                    return false;
+                }
+            }
+        });
+    });
+
+</script>
