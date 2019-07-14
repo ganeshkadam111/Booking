@@ -25,20 +25,20 @@
             <div class="form-group">
                 <label class="col-sm-4 control-label" for="LastName">LastName</label>
                 <div class="col-sm-5">
-                    <textarea class="form-control" id="LastName" name="LastName" rows="3"></textarea>
+                    <input type="text" class="form-control" id="LastName" name="LastName" placeholder="LastName" />
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-4 control-label" for="MobileNo">MobileNo</label>
                 <div class="col-sm-5">
-                    <textarea class="form-control" id="MobileNo" name="MobileNo" rows="3"></textarea>
+                    <input type="text" class="form-control" id="MobileNo" name="MobileNo" placeholder="MobileNo" maxlength="10"/>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="col-sm-4 control-label" for="email">EmailId</label>
+                <label class="col-sm-4 control-label" for="EmailId">EmailId</label>
                 <div class="col-sm-5">
-                    <input type="email" class="form-control" id="email" name="email" placeholder="EmailId" />
+                    <input type="email" class="form-control" id="EmailId" name="EmailId" placeholder="EmailId" />
                 </div>
             </div>
 
@@ -65,13 +65,13 @@
             <div class="form-group">
                 <label class="col-sm-4 control-label" for="MiddleName_2">MiddleName_2</label>
                 <div class="col-sm-5">
-                    <textarea class="form-control" id="MiddleName_2" name="MiddleName_2" rows="3"></textarea>
+                    <input type="text" class="form-control" id="MiddleName_2" name="MiddleName_2" placeholder="MiddleName_2" />
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-4 control-label" for="LastName_2">LastName_2</label>
                 <div class="col-sm-5">
-                    <textarea class="form-control" id="LastName_2" name="LastName_2" rows="3"></textarea>
+                    <input type="text" class="form-control" id="LastName_2" name="LastName_2" placeholder="LastName_2" />
                 </div>
             </div>
             <div class="form-group">
@@ -97,10 +97,7 @@
                     minlength: 10,
                     maxlength: 10
                 },
-                email: {
-                    required: true,
-                    email: true
-                },
+                 EmailId: "required",
                 messages: {
                     FirstName: "Please enter your firstname",
                     LastName: "Please enter your lastname",
@@ -112,7 +109,7 @@
                         minlength: "Your MobileNo should be 10 characters",
                         maxlength: "Your MobileNo should be 10 characters"
                     },
-                    email: "Please enter a valid email address",
+                    EmailId: "Please enter your Email",
                 },
                 errorElement: "em",
                 errorPlacement: function (error, element) {
@@ -146,12 +143,13 @@
                     $.ajax({
                         type: 'POST',
                         url: '/Traveller/AddTraveller',
+                        dataType: "json",
                         data: {
                             FirstName: $("#FirstName").val(),
                             MiddleName: $("#MiddleName").val(),
                             LastName: $("#LastName").val(),
                             MobileNo: $('#MobileNo').val(),
-                            EmailId: $('#email').val(),
+                            EmailId: $('#EmailId').val(),
                             Address: $('#Address').val(),
                             Gender: $("input[name='gender']:checked").val(),
                             FirstName_2: $('#FirstName_2').val(),

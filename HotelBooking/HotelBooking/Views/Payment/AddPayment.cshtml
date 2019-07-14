@@ -22,13 +22,13 @@
             <div class="form-group">
                 <label class="col-sm-4 control-label" for="NameOnCard">NameOnCard</label>
                 <div class="col-sm-5">
-                    <textarea class="form-control" id="NameOnCard" name="NameOnCard" rows="3"></textarea>
+                    <input type="text" class="form-control" id="NameOnCard" name="NameOnCard" placeholder="NameOnCard" />
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-4 control-label" for="ExpiryDate">ExpiryDate</label>
                 <div class="col-sm-5">
-                    <textarea class="form-control" id="ExpiryDate" name="ExpiryDate" rows="3"></textarea>
+                    <input type="text" class="form-control" id="ExpiryDate" name="ExpiryDate" placeholder="RoomTypeList" />
                 </div>
             </div>
 
@@ -112,7 +112,7 @@
                         },
                         success: function (data) {
                             alert(data);
-                            window.location.href = "/Payment/PaymentDetails";
+                            window.location.href = "/HotelSearch/HotelSearchBooking";
                         }
                     });
                     return false;

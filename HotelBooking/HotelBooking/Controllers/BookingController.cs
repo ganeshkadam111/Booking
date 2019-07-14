@@ -28,12 +28,7 @@ namespace HotelBooking.Controllers
             IEnumerable<BookingViewModel> model = repository.GetAllBookings();
             return View(model);
         }
-        [HttpGet]
-        public JsonResult GetAllHotel()
-        {
-            IEnumerable<HotelModel> listHotel = repository.GetAllHotel();
-            return Json(listHotel, JsonRequestBehavior.AllowGet);
-        }
+     
         [HttpGet]
         public JsonResult GetAllRoomName()
         {
@@ -45,14 +40,40 @@ namespace HotelBooking.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public JsonResult AddBookingFromSearch(SearchModel searchModel)
+        {
+            HotelViewModel hotelModel = repository.GetAllHotels().SingleOrDefault(x => x.Id == searchModel.HotelId);
+
+            BookingModel bookingModel = new BookingModel();
+            bookingModel.HotelId = hotelModel.Id;
+            bookingModel.InvoiceNumber = "HMB"+ new Guid();
+            bookingModel.FromDate = searchModel.FromDate;
+            bookingModel.ToDate = searchModel.ToDate;
+            bookingModel.Adult = searchModel.Adult;
+            bookingModel.Children = searchModel.Children;
+            bookingModel.BuyingCurrency = hotelModel.DefaultCurrency;
+            bookingModel.BookingDate = DateTime.Now.ToString("dd/mm/yyyy");
+            if (searchModel.CalculatedNight > 0)
+            {
+                bookingModel.BuyingPrice = hotelModel.PricePerNight * searchModel.CalculatedNight;
+            }
+            else
+            {
+                bookingModel.BuyingPrice = hotelModel.PricePerNight;
+            }
+
+            string data = repository.AddBooking(bookingModel);
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpPost]
         public JsonResult AddBooking(BookingModel model)
         {
             string data = repository.AddBooking(model);
             return Json(data, JsonRequestBehavior.AllowGet);
         }
-
-
 
 
 

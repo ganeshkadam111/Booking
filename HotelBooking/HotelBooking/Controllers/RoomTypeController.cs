@@ -26,7 +26,7 @@ namespace HotelBooking.Controllers
         }
 
         [HttpGet]
-        public ActionResult AddRooms()
+        public ActionResult AddRoom()
         {
             return View();
         }
@@ -37,10 +37,34 @@ namespace HotelBooking.Controllers
             return Json(listAmenities, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
-        public JsonResult AddRooms(RoomTypeModel model)
+        public JsonResult AddRoom(RoomTypeModel model)
         {
             string data = repository.AddRoom(model);
             return Json(data, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
+        public ActionResult EditRoom(int Id)
+        {
+            ViewBag.ID = Id;
+            return View();
+        }
+        [HttpGet]
+        public JsonResult GetRoomById(int roomId)
+        {
+            RoomTypeModel model = repository.GetRoomById(roomId);
+            return Json(model, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult EditRoom(RoomTypeModel model)
+        {
+            string result = repository.UpdateRoom(model);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult DeleteRoom(int Id)
+        {
+            string message = repository.DeleteRoom(Id);
+            return Json(message, JsonRequestBehavior.AllowGet);
         }
 
     }

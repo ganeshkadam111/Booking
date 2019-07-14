@@ -37,9 +37,13 @@ namespace HotelBooking.Controllers
         {
             try
             {
-                IEnumerable<HotelViewModel> searchHotelList = hotelRepository.GetAllHotels().Where(f =>
-                          f.CityName.ToLower().Contains(searchValue.ToLower()) ||
-                          f.CountryName.ToLower().Contains(searchValue.ToLower()));
+                IEnumerable<HotelViewModel> searchHotelList= new List<HotelViewModel>();
+                if (!string.IsNullOrEmpty(searchValue))
+                {
+                    searchHotelList = hotelRepository.GetAllHotels().Where(f =>
+                              f.CityName.ToLower().Contains(searchValue.ToLower()) ||
+                              f.CountryName.ToLower().Contains(searchValue.ToLower()));
+                }
                 return searchHotelList;
             }
             catch (Exception ex)

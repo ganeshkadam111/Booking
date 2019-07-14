@@ -58,6 +58,8 @@ namespace HotelBooking.Models.Repository
                     hotelView.HotelName = data[i].HotelName;
                     hotelView.Address = data[i].Address;
                     hotelView.PhoneNumber = data[i].PhoneNumber;
+                    hotelView.CancellationPolicy = data[i].CancellationPolicy;
+                    hotelView.Description = data[i].Description;
                     hotelView.CountryId = Convert.ToInt32(data[i].CountryId);
                     CountryModel countryModel = GetAllCountry().SingleOrDefault(x => x.Id == hotelView.CountryId);
                     hotelView.CountryName = countryModel.CountryName;

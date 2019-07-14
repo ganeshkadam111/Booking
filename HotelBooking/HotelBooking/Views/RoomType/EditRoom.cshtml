@@ -1,0 +1,123 @@
+﻿
+@{
+    ViewBag.Title = "EditRoom";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Edit Room Form</h3>
+    </div>
+    <div class="panel-body">
+        <input type="hidden" id="txtRoomId" value="@ViewBag.ID" disabled="disabled" />
+        <form id="EditRoomForm" class="form-horizontal">
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="RoomName">RoomName</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="RoomName" name="RoomName" placeholder="RoomName" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label" for="ddlAmenities">Amenities</label>
+                <div class="col-sm-5">
+                    <select id="ddlAmenities" class="form-control">
+                        <option> Select Amenities</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-9 col-sm-offset-4">
+                    <button type="submit" class="btn btn-primary" name="edithotel" value="Edit hotel">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div>
+        @Html.ActionLink("Back To List", " EditRoom", "RoomType", new { area = "" }, new { @class = "btn" })
+    </div>
+</div>
+<script type="text/javascript">
+    function GetAllAmenities() {
+        $.ajax({
+            type: "GET",
+            url: "/RoomType/GetAmenities",
+            datatype: "Json",
+            success: function (data) {
+                $.each(data, function (index, value) {
+                    $('#ddlAmenities').append('<option value="' + value.Id + '">' + value.AmenityName + '</option>');
+                });
+            }
+        });
+    }
+    $(document).ready(function () {
+        GetAllAmenities();
+        var roomID= $("#txtRoomId").val();// takes viewbag Id value//
+
+      $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            url: "/RoomType/GetRoomById",
+            data: { roomId: roomID },
+            datatype: "Json",
+          success: function (data) {
+              $("#RoomName").val(data.RoomName);//model to textbox
+              $("#ddlAmenities").val(data.Amenities);
+                }
+        })
+
+        $("#EditRoomForm").validate({
+            rules: {
+                RoomName: "required",
+                ddlAmenities: "required",
+            },
+            messages: {
+                RoomName: "Please enter your roomname",
+                ddlAmenities: "Please select a currency",
+            },
+            errorElement: "em",
+            errorPlacement: function (error, element) {
+                // Add the `help-block` class to the error element
+                error.addClass("help-block");
+
+                // Add `has-feedback` class to the parent div.form-group
+                // in order to add icons to inputs
+                element.parents(".col-sm-5").addClass("has-feedback");
+
+                // Add the span element, if doesn't exists, and apply the icon classes to it.
+                if (!element.next("span")[0]) {
+                    $("<span class='glyphicon glyphicon-remove form-control-feedback'></span>").insertAfter(element);
+                }
+            },
+            success: function (label, element) {
+                // Add the span element, if doesn't exists, and apply the icon classes to it.
+                if (!$(element).next("span")[0]) {
+                    $("<span class='glyphicon glyphicon-ok form-control-feedback'></span>").insertAfter($(element));
+                }
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).parents(".col-sm-5").addClass("has-error").removeClass("has-success");
+                $(element).next("span").addClass("glyphicon-remove").removeClass("glyphicon-ok");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).parents(".col-sm-5").addClass("has-success").removeClass("has-error");
+                $(element).next("span").addClass("glyphicon-ok").removeClass("glyphicon-remove");
+            },
+            submitHandler: function (form) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/RoomType/EditRoom',
+                    data: {
+                        Id: $("#txtRoomId").val(),
+                        RoomName: $("#RoomName").val(),
+                        Amenities: $('#ddlAmenities').val()
+                    },
+                    success: function (data) {
+                        alert(data);
+                        window.location.href = "/RoomType/RoomTypeList";
+                    }
+                });
+                return false;
+            }
+        });
+    });
+</script>

@@ -9,9 +9,6 @@ namespace HotelBooking.Repository
 {
     public class PaymentRepository : IPaymentRepository
     {
-
-        
-
         public IEnumerable<BookingModel> GetAllBooking()
         {
             using (HotelDBContext _hotelEntities = new HotelDBContext())
@@ -67,7 +64,6 @@ namespace HotelBooking.Repository
                     paymentTbl.ExpiryDate = model.ExpiryDate;
                     paymentTbl.Status = model.Status;
                     paymentTbl.CreatedOn = System.DateTime.Now.ToShortDateString();
-                    paymentTbl.ModifiedOn = System.DateTime.Now.ToShortDateString();
                     dBEntities.Entry(paymentTbl).State = System.Data.Entity.EntityState.Added;
                     dBEntities.SaveChanges();
                     result = "Record Inserted";

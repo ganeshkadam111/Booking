@@ -10,7 +10,7 @@ namespace HotelBooking.Repository
     interface IBookingRepository:IDisposable
     {
         IEnumerable<BookingViewModel> GetAllBookings();
-        IEnumerable<HotelModel> GetAllHotel();
+        IEnumerable<HotelViewModel> GetAllHotels();
         IEnumerable<RoomTypeModel> GetAllRoomType();
         string AddBooking(BookingModel bookingModel);
     }

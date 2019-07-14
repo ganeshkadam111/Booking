@@ -12,5 +12,8 @@ namespace HotelBooking.Repository
         IEnumerable<RoomTypeModel> GetAllRooms();
         IEnumerable<AmenitiesModel> GetAllAmenities();
         string AddRoom(RoomTypeModel roomType);
+        RoomTypeModel GetRoomById(int roomID);
+        string UpdateRoom(RoomTypeModel roomType);
+        string DeleteRoom(int id);
     }
 }

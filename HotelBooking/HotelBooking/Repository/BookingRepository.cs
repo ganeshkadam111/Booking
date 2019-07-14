@@ -13,24 +13,32 @@ namespace HotelBooking.Repository
         {
             throw new NotImplementedException();
         }
-        public IEnumerable<HotelModel> GetAllHotel()
+
+        public IEnumerable<HotelViewModel> GetAllHotels()
         {
             using (HotelDBContext _hotelEntities = new HotelDBContext())
             {
                 var data = _hotelEntities.Hotels.ToList();
-                List<HotelModel> hotelList = new List<HotelModel>();
-
+                List<HotelViewModel> hotelList = new List<HotelViewModel>();
                 for (var i = 0; i < data.Count; i++)
                 {
-                    HotelModel hotel = new HotelModel();
-                    hotel.Id = data[i].Id;
-                    hotel.HotelName = data[i].HotelName;
-                    hotelList.Add(hotel);
+                    HotelViewModel hotelView = new HotelViewModel();
+                    hotelView.Id = data[i].Id;
+                    hotelView.HotelName = data[i].HotelName;
+                    hotelView.Address = data[i].Address;
+                    hotelView.PhoneNumber = data[i].PhoneNumber;
+                    hotelView.CancellationPolicy = data[i].CancellationPolicy;
+                    hotelView.Description = data[i].Description;
+                    hotelView.CountryId = Convert.ToInt32(data[i].CountryId);
+                    hotelView.CityId = Convert.ToInt32(data[i].CityId);
+                    hotelView.PricePerNight = Convert.ToDecimal(data[i].PricePerNight);
+                    hotelView.DefaultCurrency = data[i].DefaultCurrency;
+                    hotelList.Add(hotelView);
                 }
                 return hotelList;
             }
         }
-
+    
         public IEnumerable<RoomTypeModel> GetAllRoomType()
         {
             using (HotelDBContext _hotelEntities = new HotelDBContext())
@@ -62,8 +70,6 @@ namespace HotelBooking.Repository
                     bookingView.Id = data[i].Id;
                     bookingView.InvoiceNumber = data[i].InvoiceNumber;
                     bookingView.HotelId = Convert.ToInt32(data[i].HotelId);
-                    HotelModel hotelModel =GetAllHotel().SingleOrDefault(x => x.Id == bookingView.HotelId);
-                    bookingView.HotelName = hotelModel.HotelName;
                     bookingView.RoomId = Convert.ToInt32(data[i].RoomId);
                     RoomTypeModel roomModel = GetAllRoomType().SingleOrDefault(x => x.Id == bookingView.RoomId);
                     bookingView.FromDate = roomModel.RoomName;
@@ -94,7 +100,6 @@ namespace HotelBooking.Repository
                     bookingTbl.BuyingPrice = model.BuyingPrice;
                     bookingTbl.BuyingCurrency = model.BuyingCurrency;
                     bookingTbl.CreatedOn = System.DateTime.Now.ToShortDateString();
-                    bookingTbl.ModifiedOn = System.DateTime.Now.ToShortDateString();
                    _hotelEntities.Entry(bookingTbl).State = System.Data.Entity.EntityState.Added;
                     _hotelEntities.SaveChanges();
                     result = "Record Inserted";

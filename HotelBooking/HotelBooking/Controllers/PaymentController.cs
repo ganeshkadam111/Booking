@@ -35,6 +35,7 @@ namespace HotelBooking.Controllers
         {
             return View();
         }
+
        [HttpPost]
         public JsonResult AddPayment(PaymentModel model)
         {

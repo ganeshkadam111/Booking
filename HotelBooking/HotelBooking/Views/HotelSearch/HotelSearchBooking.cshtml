@@ -11,7 +11,13 @@
         flex: 1 1 auto;
     }
 </style>
+
 <form class="form-horizontal" id="hotelSearchForm">
+    <br />
+    <label id="errorSearchCity" style="color:red" class="hidden">Select city / country</label> <br />
+    <label id="errorFromDate" style="color:red" class="hidden">Select FromDate</label><br />
+    <label id="errorToDate" style="color:red" class="hidden">Select ToDate</label><br />
+
     <div class="row">
         <div class="col-sm-12">
             <div class="field-icon-wrap">
@@ -49,10 +55,10 @@
                     <div class="field-icon-wrap">
                         <div class="icon"><span class="ion-ios-arrow-down"></span></div>
                         <select name="" id="adults" class="form-control">
-                            <option value="">1</option>
-                            <option value="">2</option>
-                            <option value="">3</option>
-                            <option value="">4+</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
                         </select>
                     </div>
                 </div>
@@ -61,17 +67,17 @@
                     <div class="field-icon-wrap">
                         <div class="icon"><span class="ion-ios-arrow-down"></span></div>
                         <select name="" id="children" class="form-control">
-                            <option value="">1</option>
-                            <option value="">2</option>
-                            <option value="">3</option>
-                            <option value="">4+</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
                         </select>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-lg-3 align-self-end">
-            <button id="checkAvailabilty" class="btn btn-primary btn-block text-white">Check Availabilty</button>
+            <button id="checkAvailabilty" type="button" class="btn btn-primary btn-block text-white">Check Availabilty</button>
         </div>
     </div>
 </form>
@@ -83,7 +89,7 @@
 <br />
 
 <label>search Result</label>
-    <div id="searchResult" class="container-fluid"></div>
+<div id="searchResult" class="container-fluid"></div>
 
 <script type="text/javascript">
     function calculate() {
@@ -92,7 +98,6 @@
         var oneDay = 24 * 60 * 60 * 1000;
         var diff = 0;
         if (d1 && d2) {
-
             diff = Math.round(Math.abs((d2.getTime() - d1.getTime()) / (oneDay)));
         }
         $('#calculatedNight').val(diff);
@@ -144,27 +149,77 @@
 
         $("#checkAvailabilty").click(function () {
             let searchTearm = $("#hiddenSearchValue").val();
-            $.ajax({
-                cache: false,
-                async: false,
-                type: "GET",
-                dataType: "json",
-                url: "/HotelSearch/HotelSearchBookingList",
-                data: { keyword: searchTearm },
-                success: function (data) {
-                    var card;
-                    $.each(data, function (i, v) {
-                        card +="<div class='row'><div class='col-12 mt-3'> <div class='card'>" +
-                            "<div class='card-horizontal'> <div class='img-square-wrapper'><img class='' src='http://via.placeholder.com/300x180' alt='Card image'></div>" +
-                            "<div class='card-body'><h4 class='card-title'>" + data.HotelName + "</h4><p class='card-text'>" + data.Description + "</p><p class='card-text'>" + data.DefaultCurrency + "</p><p class='card-text'>" + data.PricePerNight + " /pricePerNight</p></div><div>" +
-                            "<a href='javascript:void(0)' onclick='BookHotel(" + v.Id + ")' class='btn btn-primary'> Book Now</a></div></div></div></div></div>";
-                    });
-                    $("#searchResult").append(card);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    alert('Failed to retrieve data.');
-                }
-            });
+            var FromDate = $('#FromDate').datepicker('getDate');
+            var ToDate = $('#ToDate').datepicker('getDate');
+
+            if (searchTearm == "" || searchTearm == undefined) {
+                $('#errorSearchCity').removeClass('hidden');
+            }
+            else {
+                $('#errorSearchCity').addClass('hidden');
+            }
+
+            if (FromDate == "" || FromDate == undefined) {
+                $('#errorFromDate').removeClass('hidden');
+            }
+            else {
+                $('#errorFromDate').addClass('hidden');
+            }
+            if (ToDate == "" || ToDate == undefined) {
+                $('#errorToDate').removeClass('hidden');
+            }
+            else {
+                $('#errorToDate').addClass('hidden');
+            }
+            if (ToDate && FromDate && searchTearm) {
+                $.ajax({
+                    cache: false,
+                    async: false,
+                    type: "GET",
+                    dataType: "json",
+                    url: "/HotelSearch/HotelSearchBookingList",
+                    data: {  keyword: searchTearm },
+                    success: function (data) {
+                        $("#searchResult").empty();
+                        var card;
+                        $.each(data, function (i, v) {
+                            card += "<div class='row' style='margin-bottom:10px'><div class='col-12 mt-3'> <div class='card'>" +
+                                "<div class='card-horizontal'> <div class='img-square-wrapper' style='margin-right:10px'><img class='' src='http://via.placeholder.com/300x180' alt='Card image'></div>" +
+                                "<div class='card-body'><h4 class='card-title'>" + v.HotelName + "</h4><p class='card-text'>" + v.Description + "</p><p class='card-text'> currency: " + v.DefaultCurrency + "</p><p class='card-text'>" + v.PricePerNight + " /pricePerNight</p></div><div>" +
+                                "<button type='button' id='" + v.Id + "' onclick='BookHotel(" + v.Id + ")' class='btn btn-primary'> Book Now</button></div></div></div></div></div>";
+                        });
+                        if (card) {
+                            $("#searchResult").append(card);
+                        }
+                        else {
+                            $("#searchResult").append("No result found");
+                        }
+                    }
+                });
+            }
         });
     })
+
+    function BookHotel(HotelId) {
+         var FromDate = $('#FromDate').datepicker('getDate');
+         var ToDate = $('#ToDate').datepicker('getDate');
+         var calculatedNight = $('#calculatedNight').val();
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Booking/AddBookingFromSearch",
+            data: {
+                HotelId: HotelId,
+                FromDate: FromDate,
+                ToDate: ToDate,
+                Adult: $('#adults').val(),
+                Children: $('#children').val(),
+                CalculatedNight:calculatedNight
+            },
+            success: function (data) {
+                window.location.href = "/Traveller/AddTraveller";
+            }
+        });
+
+    }
 </script>
